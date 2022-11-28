@@ -1,0 +1,27 @@
+#!/bin/bash
+if [[ $EUID -ne 0 ]]; then echo "This script must be run as root" && exit 1; fi
+readonly gosrc="https://dl.google.com/go"
+readonly VERSION="go1.18"
+readonly GO_OOS=${1:-"linux"} # "darwin" for macOS
+readonly GO_ARCH=${2:-"amd64"}
+readonly GO_TAR="$VERSION.$GO_OOS-$GO_ARCH.tar.gz"
+readonly GO_URL="$gosrc/$GO_TAR"
+
+# clean
+rm -rf /usr/local/go /bin/go /usr/bin/go /usr/bin/gofmt
+
+# pull
+wget $GO_URL
+
+# extract
+tar -C /usr/local -xzf $GO_TAR 
+
+# create symlinks
+ln -s /usr/local/go/bin/go /usr/bin/go
+ln -s /usr/local/go/bin/gofmt /usr/bin/gofmt
+
+# grab gotip
+# go install golang.org/dl/gotip@latest && gotip download
+
+echo -e "\n\n\trun\n\t\texport PATH=\$PATH:/usr/local/go/bin\n\n"
+
